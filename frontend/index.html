@@ -68,26 +68,64 @@
   }
 
   .drop-area svg{opacity:.9}
-  .drop h2{margin:2px 0 0;font-size:18px}
-  .drop p{margin:0;color:var(--muted);font-size:13px;text-align:center}
+  .drop h2{margin:6px 0 6px;font-size:18px}
+  .drop p{margin:6px 0 12px 0;color:var(--muted);font-size:13px;text-align:center}
 
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   input[type=file]{display:none}
 
-  /* buttons */
+  /* buttons — pill, minimal, tactile */
   .btn{
-    border:0;padding:10px 14px;border-radius:10px;font-weight:700;
-    background: linear-gradient(180deg,var(--accent), #69a9ff);
-    color:white;cursor:pointer;box-shadow:0 8px 18px rgba(80,140,255,0.12);
-    transition: transform .08s ease, box-shadow .12s ease, opacity .08s;
+    border: 0;
+    padding: 12px 22px;
+    border-radius: 999px;           /* fully pill */
+    font-weight: 700;
+    background: #ffffff;            /* white pill */
+    color: #0b0d10;                 /* dark text */
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(11,13,16,0.10), inset 0 -1px 0 rgba(0,0,0,0.04);
+    transition: transform .12s ease, box-shadow .12s ease, opacity .08s;
+    letter-spacing: 0.2px;
+    font-size: 14px;
   }
-  .btn:active{transform: translateY(1px)}
-  .btn.ghost{
-    background:transparent;color:var(--text);border:1px solid rgba(255,255,255,0.04);
-    box-shadow:none;font-weight:600;padding:8px 12px;
+  .btn:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 14px 36px rgba(11,13,16,0.14);
+  }
+  .btn:active{
+    transform: translateY(1px);
+    box-shadow: 0 6px 14px rgba(11,13,16,0.08);
+    opacity: 0.98;
   }
 
-  .meta{font-size:12px;color:var(--muted);margin-top:4px}
+  /* secondary (ghost) pill */
+  .btn.ghost{
+    background: transparent;
+    color: var(--text);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: none;
+    padding: 8px 14px;
+    font-weight: 600;
+  }
+
+  /* download pill — similar shape but with subtle accent gradient */
+  a.dl{
+    display:inline-block;
+    text-decoration:none;
+    color: #071312;
+    background: linear-gradient(90deg, #e9fff4, #d6fff0); /* very soft teal */
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-weight:700;
+    box-shadow: 0 10px 30px rgba(77,214,177,0.08);
+    border: 1px solid rgba(10,40,30,0.06);
+  }
+  a.dl:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(77,214,177,0.12);
+  }
+
+  .meta{font-size:12px;color:var(--muted);margin-top:14px}
 
   /* progress */
   .progress-wrap{margin-top:20px}
@@ -105,12 +143,6 @@
   .status.err{color:var(--danger)}
 
   .download{margin-top:16px;display:none}
-  a.dl{
-    display:inline-block;text-decoration:none;color: white;
-    background: linear-gradient(90deg,var(--accent-2), #4dd6b1);
-    padding:10px 14px;border-radius:10px;font-weight:700;
-    box-shadow:0 10px 30px rgba(77,214,177,0.08);
-  }
 
   footer{margin-top:22px;font-size:12px;color:var(--muted);text-align:center}
 
@@ -118,6 +150,8 @@
   @media (max-width:560px){
     .card{padding:18px}
     .drop-area{min-height:140px}
+    .btn{padding:9px 14px;font-size:13px}
+    a.dl{padding:9px 14px;font-size:13px}
   }
 </style>
 </head>
@@ -133,7 +167,7 @@
       </header>
 
       <div id="drop" class="drop" aria-describedby="meta">
-        <div class="drop-area" id="dropArea">
+        <div class="drop-area" id="dropArea" tabindex="0" aria-label="Drop ePub file here">
           <svg width="46" height="46" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 16V4m0 0 4 4m-4-4-4 4" stroke="white" opacity=".9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             <rect x="3" y="14" width="18" height="7" rx="3" stroke="white" opacity=".18" stroke-width="1.5"/>
@@ -149,8 +183,8 @@
         </div>
 
         <div class="progress-wrap" aria-live="polite">
-          <div class="progress"><div class="bar" id="bar"></div></div>
-          <div class="status" id="status"></div>
+          <div class="progress" aria-hidden="true"><div class="bar" id="bar"></div></div>
+          <div class="status" id="status" role="status"></div>
           <div class="download" id="download">
             <a class="dl" id="dl" href="#" download>Download PDF</a>
           </div>
@@ -268,7 +302,7 @@
     pollOnce(taskId);
   }
 
-  /* Drag & drop */
+  /* Drag & drop and keyboard support */
   ['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => {
     e.preventDefault(); e.stopPropagation(); drop.classList.add('hover');
   }));
@@ -278,6 +312,14 @@
   drop.addEventListener('drop', e => {
     const f = e.dataTransfer.files && e.dataTransfer.files[0];
     if(f) upload(f);
+  });
+
+  // keyboard accessibility: Enter on drop area triggers file input
+  dropArea.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.key === ' ') {
+      fileInput.click();
+      e.preventDefault();
+    }
   });
 
   fileInput.addEventListener('change', e => {
