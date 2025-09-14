@@ -201,12 +201,7 @@ Please run linters / tests (if added) and document behavior changes. If you want
 ---
 
 # License & acknowledgements
-- **License:** MIT (feel free to change to your preferred license).  
+- **License:** MIT.  
 - Built with: [FastAPI](https://fastapi.tiangolo.com), [Calibre](https://calibre-ebook.com/), and a tiny Nginx frontend for static hosting.
 
----
 
-If you’d like, I can:
-- Add an explicit `LICENSE` file (MIT) and a short `CONTRIBUTING.md`.  
-- Create a GitHub Actions workflow to build the Docker images and run lightweight tests.  
-- Generate a compact Markdown snippet for your repo description and topics.
