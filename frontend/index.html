@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ePub → PDF Converter</title>
+  <style>
+    :root{
+      --glass-bg: rgba(255,255,255,0.08);
+      --border: rgba(255,255,255,0.18);
+      --accent: #4c8bf5;
+      --text: #e9eef6;
+      --muted: #b7c0cc;
+      --danger: #ff6b6b;
+      --ok: #4ad295;
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Inter", "Helvetica", Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 20% -10%, #243046 0%, #0f1218 45%, #0a0c10 100%);
+      display:flex;align-items:center;justify-content:center;padding:24px;
+    }
+    .shell{
+      width:100%;max-width:720px;
+      backdrop-filter: blur(16px) saturate(140%);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      background: var(--glass-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    header{
+      padding:24px 28px;
+      display:flex;align-items:center;gap:12px;
+      border-bottom:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+    }
+    header .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent)}
+    header h1{font-size:18px;margin:0;font-weight:600;letter-spacing:.2px}
+    main{padding:28px}
+    .drop{
+      border:1.5px dashed var(--border);
+      border-radius:18px;
+      padding:28px;
+      display:flex;flex-direction:column;align-items:center;gap:14px;
+      text-align:center;
+      transition: all .2s ease;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    }
+    .drop.hover{border-color: var(--accent); box-shadow: inset 0 0 0 1px rgba(76,139,245,.25)}
+    .drop h2{margin:8px 0 0;font-size:20px}
+    .drop p{margin:0;color:var(--muted);font-size:14px}
+    .btn{
+      appearance:none;border:0;border-radius:12px;padding:10px 14px;
+      background: var(--accent);color:white;font-weight:600;
+      cursor:pointer;transition:transform .06s ease;box-shadow:0 6px 18px rgba(76,139,245,.35);
+    }
+    .btn:active{transform:translateY(1px)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+    input[type="file"]{display:none}
+    .meta{margin-top:10px;color:var(--muted);font-size:13px}
+    .progress{
+      margin-top:22px;width:100%;height:10px;border-radius:999px;
+      background: rgba(255,255,255,0.08); overflow:hidden;border:1px solid var(--border);
+    }
+    .bar{
+      height:100%;width:0%;
+      background: linear-gradient(90deg, var(--accent), #7aa6fb);
+      transition: width .4s ease;
+    }
+    .status{margin-top:10px;font-size:14px;min-height:20px}
+    .status.error{color:var(--danger)}
+    .status.ok{color:var(--ok)}
+    .download{
+      margin-top:16px;display:none
+    }
+    a.dl{
+      display:inline-block;text-decoration:none;color:white;background:linear-gradient(90deg,#4ad295,#38c4e9);
+      padding:10px 14px;border-radius:12px;font-weight:700;box-shadow:0 6px 18px rgba(56,196,233,.35);
+    }
+    footer{padding:18px 28px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
+    .hint{opacity:.9}
+    @media (max-width:520px){ header h1{font-size:16px} .drop h2{font-size:18px} }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="dot"></div>
+      <h1>ePub → PDF Converter</h1>
+    </header>
+    <main>
+      <div id="drop" class="drop">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 16V4m0 0 4 4m-4-4-4 4" stroke="white" opacity=".9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="3" y="14" width="18" height="7" rx="3" stroke="white" opacity=".4" stroke-width="1.5"/>
+        </svg>
+        <h2>Drag an ePub here</h2>
+        <p>or</p>
+        <div class="row">
+          <label class="btn" for="file">Choose File</label>
+          <input id="file" type="file" accept=".epub,application/epub+zip" />
+        </div>
+        <div class="meta" id="meta">Max 100 MB • Private session • No persistence</div>
+      </div>
+
+      <div class="progress"><div class="bar" id="bar"></div></div>
+      <div class="status" id="status"></div>
+      <div class="download" id="download">
+        <a class="dl" id="dl" href="#" download>Download PDF</a>
+      </div>
+    </main>
+    <footer>
+      <span class="hint">Tip:</span> Keep this tab open while processing. Progress updates every 2 seconds.
+    </footer>
+  </div>
+
+<script>
+(function(){
+  const drop = document.getElementById('drop');
+  const fileInput = document.getElementById('file');
+  const bar = document.getElementById('bar');
+  const status = document.getElementById('status');
+  const downloadWrap = document.getElementById('download');
+  const dl = document.getElementById('dl');
+
+  let pollTimer = null;
+  let currentTask = null;
+
+  function setStatus(text, type){
+    status.textContent = text || '';
+    status.className = 'status' + (type ? ' ' + type : '');
+  }
+  function setProgress(p){
+    bar.style.width = Math.max(0, Math.min(100, p)) + '%';
+  }
+  function resetUI(){
+    setProgress(0);
+    setStatus('');
+    downloadWrap.style.display = 'none';
+    dl.removeAttribute('href');
+  }
+
+  function validFile(f){
+    const okType = (f.type === 'application/epub+zip') || f.name.toLowerCase().endsWith('.epub');
+    const okSize = f.size <= 100 * 1024 * 1024;
+    if(!okType) return {ok:false, msg:'Unsupported file type. Please upload a .epub file.'};
+    if(!okSize) return {ok:false, msg:'File exceeds 100 MB limit.'};
+    return {ok:true};
+  }
+
+  async function upload(file){
+    resetUI();
+    const v = validFile(file);
+    if(!v.ok){ setStatus(v.msg, 'error'); return; }
+
+    setStatus('Uploading…');
+    setProgress(8);
+    const form = new FormData();
+    form.append('file', file);
+
+    try{
+      const res = await fetch('/api/convert', { method:'POST', body: form });
+      const data = await res.json();
+      if(!res.ok){
+        setStatus(data.error || 'Upload failed.', 'error');
+        return;
+      }
+      currentTask = data.task_id;
+      setStatus('Processing…');
+      setProgress(12);
+      startPolling(currentTask);
+    }catch(err){
+      setStatus('Network error: ' + err.message, 'error');
+    }
+  }
+
+  async function pollOnce(taskId){
+    try{
+      const res = await fetch('/api/progress/' + encodeURIComponent(taskId), { cache:'no-store' });
+      const data = await res.json();
+      if(!res.ok){
+        setStatus(data.error || 'Error', 'error');
+        clearInterval(pollTimer); pollTimer = null;
+        return;
+      }
+      if(typeof data.progress === 'number'){
+        setProgress(data.progress);
+      }
+      if(data.status === 'processing'){
+        if(data.message){ setStatus(data.message); }
+        return;
+      }
+      if(data.status === 'complete'){
+        setProgress(100);
+        setStatus('Done! Your PDF is ready.', 'ok');
+        if(data.download_url){
+          downloadWrap.style.display = 'block';
+          dl.href = data.download_url;
+        }
+        clearInterval(pollTimer); pollTimer = null;
+        return;
+      }
+      if(data.status === 'error'){
+        setStatus(data.message || 'Conversion failed.', 'error');
+        clearInterval(pollTimer); pollTimer = null;
+        return;
+      }
+    }catch(err){
+      setStatus('Network error: ' + err.message, 'error');
+      clearInterval(pollTimer); pollTimer = null;
+    }
+  }
+
+  function startPolling(taskId){
+    if(pollTimer) { clearInterval(pollTimer); }
+    pollTimer = setInterval(() => pollOnce(taskId), 2000);
+    pollOnce(taskId);
+  }
+
+  // Drag & Drop
+  ;['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => {
+    e.preventDefault(); e.stopPropagation(); drop.classList.add('hover');
+  }));
+  ;['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => {
+    e.preventDefault(); e.stopPropagation(); drop.classList.remove('hover');
+  }));
+  drop.addEventListener('drop', e => {
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) upload(f);
+  });
+  fileInput.addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if(f) upload(f);
+  });
+})();
+</script>
+</body>
+</html>

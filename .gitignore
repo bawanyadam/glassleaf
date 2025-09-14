@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Python / venv
+backend/.venv/
+__pycache__/
+*.pyc
+
+# Temp & outputs
+tmp/
+*.zip
+
+# Docker build junk (if any)
+dist/
+build/
