@@ -18,6 +18,13 @@
 
 ---
 
+# Screenshot
+The main interface showing drag-and-drop upload and progress:
+
+![Glassleaf interface](images/interface.png)
+
+---
+
 # Quick highlights
 - Drag-and-drop or file picker upload for `.epub` files.  
 - Animated progress bar updated by polling `/api/progress/{task_id}` every 2s.  
@@ -201,14 +208,6 @@ Please run linters / tests (if added) and document behavior changes. If you want
 
 ---
 
-# Screenshot
-The main interface showing drag-and-drop upload and progress:
-
-![Glassleaf interface](images/interface.png)
-
----
-
 # License & acknowledgements
 - **License:** MIT.  
 - Built with: [FastAPI](https://fastapi.tiangolo.com), [Calibre](https://calibre-ebook.com/), and a tiny Nginx frontend for static hosting.
-
