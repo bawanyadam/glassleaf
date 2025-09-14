@@ -1,142 +1,187 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ePub → PDF Converter</title>
-  <style>
-    :root{
-      --glass-bg: rgba(255,255,255,0.08);
-      --border: rgba(255,255,255,0.18);
-      --accent: #4c8bf5;
-      --text: #e9eef6;
-      --muted: #b7c0cc;
-      --danger: #ff6b6b;
-      --ok: #4ad295;
-      --shadow: 0 10px 30px rgba(0,0,0,0.35);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, "Inter", "Helvetica", Arial, sans-serif;
-      color: var(--text);
-      background: radial-gradient(1200px 800px at 20% -10%, #243046 0%, #0f1218 45%, #0a0c10 100%);
-      display:flex;align-items:center;justify-content:center;padding:24px;
-    }
-    .shell{
-      width:100%;max-width:720px;
-      backdrop-filter: blur(16px) saturate(140%);
-      -webkit-backdrop-filter: blur(16px) saturate(140%);
-      background: var(--glass-bg);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    header{
-      padding:24px 28px;
-      display:flex;align-items:center;gap:12px;
-      border-bottom:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-    }
-    header .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent)}
-    header h1{font-size:18px;margin:0;font-weight:600;letter-spacing:.2px}
-    main{padding:28px}
-    .drop{
-      border:1.5px dashed var(--border);
-      border-radius:18px;
-      padding:28px;
-      display:flex;flex-direction:column;align-items:center;gap:14px;
-      text-align:center;
-      transition: all .2s ease;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-    }
-    .drop.hover{border-color: var(--accent); box-shadow: inset 0 0 0 1px rgba(76,139,245,.25)}
-    .drop h2{margin:8px 0 0;font-size:20px}
-    .drop p{margin:0;color:var(--muted);font-size:14px}
-    .btn{
-      appearance:none;border:0;border-radius:12px;padding:10px 14px;
-      background: var(--accent);color:white;font-weight:600;
-      cursor:pointer;transition:transform .06s ease;box-shadow:0 6px 18px rgba(76,139,245,.35);
-    }
-    .btn:active{transform:translateY(1px)}
-    .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-    input[type="file"]{display:none}
-    .meta{margin-top:10px;color:var(--muted);font-size:13px}
-    .progress{
-      margin-top:22px;width:100%;height:10px;border-radius:999px;
-      background: rgba(255,255,255,0.08); overflow:hidden;border:1px solid var(--border);
-    }
-    .bar{
-      height:100%;width:0%;
-      background: linear-gradient(90deg, var(--accent), #7aa6fb);
-      transition: width .4s ease;
-    }
-    .status{margin-top:10px;font-size:14px;min-height:20px}
-    .status.error{color:var(--danger)}
-    .status.ok{color:var(--ok)}
-    .download{
-      margin-top:16px;display:none
-    }
-    a.dl{
-      display:inline-block;text-decoration:none;color:white;background:linear-gradient(90deg,#4ad295,#38c4e9);
-      padding:10px 14px;border-radius:12px;font-weight:700;box-shadow:0 6px 18px rgba(56,196,233,.35);
-    }
-    footer{padding:18px 28px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
-    .hint{opacity:.9}
-    @media (max-width:520px){ header h1{font-size:16px} .drop h2{font-size:18px} }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Glassleaf — ePub → PDF</title>
+<style>
+  :root{
+    --bg-0: #0b0d10;
+    --bg-1: #0f1316;
+    --panel: rgba(255,255,255,0.04);
+    --glass-border: rgba(255,255,255,0.06);
+    --muted: #98a0aa;
+    --accent: #6ea9ff;
+    --accent-2: #4dd6b1;
+    --success: #48d38a;
+    --danger: #ff6b6b;
+    --text: #e9eef6;
+    --radius: 14px;
+    --panel-pad: 28px;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+
+  html,body{height:100%;margin:0;background:
+    radial-gradient(500px 300px at 10% 5%, rgba(14,28,48,0.25), transparent 6%),
+    linear-gradient(180deg,var(--bg-0),var(--bg-1)); color:var(--text);}
+
+  /* Centering */
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:36px}
+
+  /* Card */
+  .card{
+    width:100%; max-width:760px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid var(--glass-border);
+    border-radius: calc(var(--radius) + 6px);
+    padding: var(--panel-pad);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px) saturate(120%);
+  }
+
+  header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .logo-dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(180deg,var(--accent), #79b9ff);box-shadow:0 4px 14px rgba(78,136,255,.14)}
+  h1{font-size:16px;margin:0;font-weight:600;letter-spacing:.2px}
+  p.lead{margin:0;color:var(--muted);font-size:13px}
+
+  /* Drop zone */
+  .drop{
+    margin-top:18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+    border-radius: 12px;
+    padding: 28px;
+    border: 1px solid rgba(255,255,255,0.02);
+    display:flex;flex-direction:column;align-items:center;gap:16px;
+  }
+  .drop.hover{outline: 2px solid rgba(110,169,255,0.12); box-shadow: 0 6px 30px rgba(14,28,48,0.6) inset;}
+
+  .drop-area{
+    width:100%;
+    max-width:640px;
+    min-height:160px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    border-radius:10px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+    border: 1px dashed rgba(255,255,255,0.03);
+    padding:22px;
+    color:var(--muted);
+  }
+
+  .drop-area svg{opacity:.9}
+  .drop h2{margin:2px 0 0;font-size:18px}
+  .drop p{margin:0;color:var(--muted);font-size:13px;text-align:center}
+
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  input[type=file]{display:none}
+
+  /* buttons */
+  .btn{
+    border:0;padding:10px 14px;border-radius:10px;font-weight:700;
+    background: linear-gradient(180deg,var(--accent), #69a9ff);
+    color:white;cursor:pointer;box-shadow:0 8px 18px rgba(80,140,255,0.12);
+    transition: transform .08s ease, box-shadow .12s ease, opacity .08s;
+  }
+  .btn:active{transform: translateY(1px)}
+  .btn.ghost{
+    background:transparent;color:var(--text);border:1px solid rgba(255,255,255,0.04);
+    box-shadow:none;font-weight:600;padding:8px 12px;
+  }
+
+  .meta{font-size:12px;color:var(--muted);margin-top:4px}
+
+  /* progress */
+  .progress-wrap{margin-top:20px}
+  .progress{
+    width:100%;height:8px;border-radius:999px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02);overflow:hidden;
+  }
+  .bar{
+    height:100%;width:0%;
+    background: linear-gradient(90deg,var(--accent),#79e3d1);
+    transition: width .5s cubic-bezier(.2,.9,.2,1);
+    box-shadow: 0 4px 18px rgba(80,140,255,0.08) inset;
+  }
+  .status{margin-top:10px;font-size:13px;min-height:20px;color:var(--muted)}
+  .status.ok{color:var(--success)}
+  .status.err{color:var(--danger)}
+
+  .download{margin-top:16px;display:none}
+  a.dl{
+    display:inline-block;text-decoration:none;color: white;
+    background: linear-gradient(90deg,var(--accent-2), #4dd6b1);
+    padding:10px 14px;border-radius:10px;font-weight:700;
+    box-shadow:0 10px 30px rgba(77,214,177,0.08);
+  }
+
+  footer{margin-top:22px;font-size:12px;color:var(--muted);text-align:center}
+
+  /* responsive */
+  @media (max-width:560px){
+    .card{padding:18px}
+    .drop-area{min-height:140px}
+  }
+</style>
 </head>
 <body>
-  <div class="shell">
-    <header>
-      <div class="dot"></div>
-      <h1>ePub → PDF Converter</h1>
-    </header>
-    <main>
-      <div id="drop" class="drop">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 16V4m0 0 4 4m-4-4-4 4" stroke="white" opacity=".9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <rect x="3" y="14" width="18" height="7" rx="3" stroke="white" opacity=".4" stroke-width="1.5"/>
-        </svg>
-        <h2>Drag an ePub here</h2>
-        <p>or</p>
-        <div class="row">
-          <label class="btn" for="file">Choose File</label>
-          <input id="file" type="file" accept=".epub,application/epub+zip" />
+  <div class="wrap">
+    <div class="card" role="main" aria-labelledby="title">
+      <header>
+        <div class="logo-dot" aria-hidden="true"></div>
+        <div>
+          <h1 id="title">ePub → PDF Converter</h1>
+          <p class="lead">Private • Single-session • Max 100 MB</p>
         </div>
-        <div class="meta" id="meta">Max 100 MB • Private session • No persistence</div>
+      </header>
+
+      <div id="drop" class="drop" aria-describedby="meta">
+        <div class="drop-area" id="dropArea">
+          <svg width="46" height="46" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 16V4m0 0 4 4m-4-4-4 4" stroke="white" opacity=".9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="3" y="14" width="18" height="7" rx="3" stroke="white" opacity=".18" stroke-width="1.5"/>
+          </svg>
+          <h2>Drag an ePub here</h2>
+          <p>or</p>
+          <div class="row">
+            <label class="btn" for="file">Choose File</label>
+            <input id="file" type="file" accept=".epub,application/epub+zip" />
+            <button class="btn ghost" id="clearBtn" type="button" style="display:none">Clear</button>
+          </div>
+          <div id="meta" class="meta">Max 100 MB • Private session • No persistence</div>
+        </div>
+
+        <div class="progress-wrap" aria-live="polite">
+          <div class="progress"><div class="bar" id="bar"></div></div>
+          <div class="status" id="status"></div>
+          <div class="download" id="download">
+            <a class="dl" id="dl" href="#" download>Download PDF</a>
+          </div>
+        </div>
       </div>
 
-      <div class="progress"><div class="bar" id="bar"></div></div>
-      <div class="status" id="status"></div>
-      <div class="download" id="download">
-        <a class="dl" id="dl" href="#" download>Download PDF</a>
-      </div>
-    </main>
-    <footer>
-      <span class="hint">Tip:</span> Keep this tab open while processing. Progress updates every 2 seconds.
-    </footer>
+      <footer>
+        Tip: Keep this tab open while processing. Progress updates every 2 seconds.
+      </footer>
+    </div>
   </div>
 
 <script>
-(function(){
+(() => {
   const drop = document.getElementById('drop');
+  const dropArea = document.getElementById('dropArea');
   const fileInput = document.getElementById('file');
   const bar = document.getElementById('bar');
   const status = document.getElementById('status');
   const downloadWrap = document.getElementById('download');
   const dl = document.getElementById('dl');
+  const clearBtn = document.getElementById('clearBtn');
 
   let pollTimer = null;
   let currentTask = null;
 
-  function setStatus(text, type){
+  function setStatus(text, cls) {
     status.textContent = text || '';
-    status.className = 'status' + (type ? ' ' + type : '');
+    status.className = 'status' + (cls ? ' ' + cls : '');
   }
-  function setProgress(p){
+  function setProgress(p) {
     bar.style.width = Math.max(0, Math.min(100, p)) + '%';
   }
   function resetUI(){
@@ -144,6 +189,7 @@
     setStatus('');
     downloadWrap.style.display = 'none';
     dl.removeAttribute('href');
+    clearBtn.style.display = 'none';
   }
 
   function validFile(f){
@@ -157,26 +203,27 @@
   async function upload(file){
     resetUI();
     const v = validFile(file);
-    if(!v.ok){ setStatus(v.msg, 'error'); return; }
+    if(!v.ok){ setStatus(v.msg, 'err'); return; }
 
     setStatus('Uploading…');
-    setProgress(8);
+    setProgress(10);
     const form = new FormData();
     form.append('file', file);
 
-    try{
+    try {
       const res = await fetch('/api/convert', { method:'POST', body: form });
       const data = await res.json();
       if(!res.ok){
-        setStatus(data.error || 'Upload failed.', 'error');
+        setStatus(data.error || 'Upload failed.', 'err');
         return;
       }
       currentTask = data.task_id;
       setStatus('Processing…');
-      setProgress(12);
+      setProgress(18);
       startPolling(currentTask);
-    }catch(err){
-      setStatus('Network error: ' + err.message, 'error');
+      clearBtn.style.display = 'inline-block';
+    } catch(err) {
+      setStatus('Network error: ' + err.message, 'err');
     }
   }
 
@@ -185,13 +232,11 @@
       const res = await fetch('/api/progress/' + encodeURIComponent(taskId), { cache:'no-store' });
       const data = await res.json();
       if(!res.ok){
-        setStatus(data.error || 'Error', 'error');
+        setStatus(data.error || 'Error', 'err');
         clearInterval(pollTimer); pollTimer = null;
         return;
       }
-      if(typeof data.progress === 'number'){
-        setProgress(data.progress);
-      }
+      if(typeof data.progress === 'number'){ setProgress(data.progress); }
       if(data.status === 'processing'){
         if(data.message){ setStatus(data.message); }
         return;
@@ -207,37 +252,44 @@
         return;
       }
       if(data.status === 'error'){
-        setStatus(data.message || 'Conversion failed.', 'error');
+        setStatus(data.message || 'Conversion failed.', 'err');
         clearInterval(pollTimer); pollTimer = null;
         return;
       }
     }catch(err){
-      setStatus('Network error: ' + err.message, 'error');
+      setStatus('Network error: ' + err.message, 'err');
       clearInterval(pollTimer); pollTimer = null;
     }
   }
 
   function startPolling(taskId){
-    if(pollTimer) { clearInterval(pollTimer); }
-    pollTimer = setInterval(() => pollOnce(taskId), 2000);
+    if(pollTimer){ clearInterval(pollTimer); }
+    pollTimer = setInterval(()=> pollOnce(taskId), 2000);
     pollOnce(taskId);
   }
 
-  // Drag & Drop
-  ;['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => {
+  /* Drag & drop */
+  ['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => {
     e.preventDefault(); e.stopPropagation(); drop.classList.add('hover');
   }));
-  ;['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => {
+  ['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => {
     e.preventDefault(); e.stopPropagation(); drop.classList.remove('hover');
   }));
   drop.addEventListener('drop', e => {
     const f = e.dataTransfer.files && e.dataTransfer.files[0];
     if(f) upload(f);
   });
+
   fileInput.addEventListener('change', e => {
     const f = e.target.files && e.target.files[0];
     if(f) upload(f);
   });
+
+  clearBtn.addEventListener('click', () => {
+    resetUI();
+    fileInput.value = '';
+  });
+
 })();
 </script>
 </body>
