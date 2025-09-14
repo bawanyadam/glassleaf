@@ -1,6 +1,6 @@
 # Glassleaf
 
-**Glassleaf** — a minimalist, private single-page app for converting ePub → PDF with drag-and-drop upload, live progress polling, and expiring downloads. Built with a FastAPI backend (Calibre `ebook-convert`) and a liquid-glass inspired frontend.
+**Glassleaf** — a minimalist, private single-page app for converting ePub → PDF with drag-and-drop upload, live progress polling, and expiring downloads. Built with a FastAPI backend (Calibre `ebook-convert`) and a simple, clean frontend.
 
 ---
 
