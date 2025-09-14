@@ -5,6 +5,7 @@
 ---
 
 ## Table of contents
+- [Screenshot](#screenshot)  
 - [Quick highlights](#quick-highlights)  
 - [Quick start — Docker (recommended for dev/test)](#quick-start--docker-recommended-for-devtest)  
 - [Quick start — Native Ubuntu 18+ (no Docker)](#quick-start--native-ubuntu-18-no-docker)  
