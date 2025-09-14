@@ -6,24 +6,25 @@
 <title>Glassleaf — ePub → PDF</title>
 <style>
   :root{
-    --bg-0: #0b0d10;
-    --bg-1: #0f1316;
-    --panel: rgba(255,255,255,0.04);
-    --glass-border: rgba(255,255,255,0.06);
-    --muted: #98a0aa;
+    --bg-0: #0b0e11;
+    --bg-1: #0a0c0f;
+    --panel: rgba(255,255,255,0.03);
+    --glass-border: rgba(255,255,255,0.05);
+    --muted: #9aa3ad;
     --accent: #6ea9ff;
-    --accent-2: #4dd6b1;
+    --accent-2: #55d1b3;
     --success: #48d38a;
     --danger: #ff6b6b;
     --text: #e9eef6;
-    --radius: 14px;
-    --panel-pad: 28px;
+    --radius: 16px;
+    --panel-pad: 32px;
+    --shadow-soft: 0 1px 0 rgba(255,255,255,0.03) inset, 0 12px 30px rgba(0,0,0,0.35);
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial;
   }
 
   html,body{height:100%;margin:0;background:
     radial-gradient(500px 300px at 10% 5%, rgba(14,28,48,0.25), transparent 6%),
-    linear-gradient(180deg,var(--bg-0),var(--bg-1)); color:var(--text);}
+    linear-gradient(180deg,var(--bg-0),var(--bg-1)); color:var(--text); line-height:1.5; letter-spacing:.1px;}
 
   /* Centering */
   .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:36px}
@@ -31,34 +32,34 @@
   /* Card */
   .card{
     width:100%; max-width:760px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.012));
     border: 1px solid var(--glass-border);
-    border-radius: calc(var(--radius) + 6px);
+    border-radius: calc(var(--radius) + 8px);
     padding: var(--panel-pad);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-    backdrop-filter: blur(10px) saturate(120%);
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(8px) saturate(115%);
   }
 
   header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
   .logo-dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(180deg,var(--accent), #79b9ff);box-shadow:0 4px 14px rgba(78,136,255,.14)}
-  h1{font-size:16px;margin:0;font-weight:600;letter-spacing:.2px}
-  p.lead{margin:0;color:var(--muted);font-size:13px}
+  h1{font-size:16px;margin:0;font-weight:550;letter-spacing:.2px}
+  p.lead{margin:4px 0 0;color:var(--muted);font-size:13px;line-height:1.6}
 
   /* Drop zone */
   .drop{
     margin-top:18px;
     background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
-    border-radius: 12px;
-    padding: 28px;
+    border-radius: 14px;
+    padding: 30px;
     border: 1px solid rgba(255,255,255,0.02);
-    display:flex;flex-direction:column;align-items:center;gap:16px;
+    display:flex;flex-direction:column;align-items:center;gap:20px;
   }
   .drop.hover{outline: 2px solid rgba(110,169,255,0.12); box-shadow: 0 6px 30px rgba(14,28,48,0.6) inset;}
 
   .drop-area{
     width:100%;
     max-width:640px;
-    min-height:160px;
+    min-height:180px;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     border-radius:10px;
     background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
@@ -68,8 +69,8 @@
   }
 
   .drop-area svg{opacity:.9}
-  .drop h2{margin:6px 0 6px;font-size:18px}
-  .drop p{margin:6px 0 12px 0;color:var(--muted);font-size:13px;text-align:center}
+  .drop h2{margin:4px 0 10px;font-size:17px;font-weight:600}
+  .drop p{margin:2px 0 14px 0;color:var(--muted);font-size:12.5px;text-align:center}
 
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   input[type=file]{display:none}
@@ -77,20 +78,20 @@
   /* buttons — pill, minimal, tactile */
   .btn{
     border: 0;
-    padding: 12px 22px;
+    padding: 11px 20px;
     border-radius: 999px;           /* fully pill */
     font-weight: 700;
     background: #ffffff;            /* white pill */
     color: #0b0d10;                 /* dark text */
     cursor: pointer;
-    box-shadow: 0 8px 24px rgba(11,13,16,0.10), inset 0 -1px 0 rgba(0,0,0,0.04);
+    box-shadow: 0 10px 24px rgba(11,13,16,0.10), inset 0 -1px 0 rgba(0,0,0,0.04);
     transition: transform .12s ease, box-shadow .12s ease, opacity .08s;
     letter-spacing: 0.2px;
     font-size: 14px;
   }
   .btn:hover{
-    transform: translateY(-3px);
-    box-shadow: 0 14px 36px rgba(11,13,16,0.14);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(11,13,16,0.14);
   }
   .btn:active{
     transform: translateY(1px);
@@ -102,9 +103,9 @@
   .btn.ghost{
     background: transparent;
     color: var(--text);
-    border: 1px solid rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
     box-shadow: none;
-    padding: 8px 14px;
+    padding: 7px 12px;
     font-weight: 600;
   }
 
@@ -125,7 +126,7 @@
     box-shadow: 0 18px 40px rgba(77,214,177,0.12);
   }
 
-  .meta{font-size:12px;color:var(--muted);margin-top:14px}
+  .meta{font-size:12px;color:var(--muted);margin-top:16px}
 
   /* progress */
   .progress-wrap{margin-top:20px}
@@ -144,11 +145,11 @@
 
   .download{margin-top:16px;display:none}
 
-  footer{margin-top:22px;font-size:12px;color:var(--muted);text-align:center}
+  footer{margin-top:24px;font-size:12px;color:var(--muted);text-align:center;opacity:.9}
 
   /* responsive */
   @media (max-width:560px){
-    .card{padding:18px}
+    .card{padding:20px}
     .drop-area{min-height:140px}
     .btn{padding:9px 14px;font-size:13px}
     a.dl{padding:9px 14px;font-size:13px}
