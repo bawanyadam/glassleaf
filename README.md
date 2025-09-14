@@ -198,10 +198,17 @@ git push origin feat/your-feature
 ```
 Please run linters / tests (if added) and document behavior changes. If you want a different license, update `LICENSE` accordingly.
 
+
+---
+
+# Screenshot
+The main interface showing drag-and-drop upload and progress:
+
+![Glassleaf interface](images/interface.png)
+
 ---
 
 # License & acknowledgements
 - **License:** MIT.  
 - Built with: [FastAPI](https://fastapi.tiangolo.com), [Calibre](https://calibre-ebook.com/), and a tiny Nginx frontend for static hosting.
-
 
