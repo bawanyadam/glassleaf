@@ -107,15 +107,10 @@ def _convert_thread(task_id: str, in_path: str, out_path: str):
     _set_task(task_id, progress=15, message=POLL_MESSAGE)
     try:
         # Call Calibre
-        # Run ebook-convert with Chromium flags so QtWebEngine can run in container as root.
-        # NOTE: --no-sandbox reduces Chromium sandboxing; acceptable for a private single-user deploy.
-        env = os.environ.copy()
-        env["QTWEBENGINE_CHROMIUM_FLAGS"] = "--no-sandbox --disable-gpu"
         proc = subprocess.Popen(
             [EBOOK_CONVERT_BIN, in_path, out_path, "--pdf-page-numbers"],
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
         )
-
         # While running, tick progress up to ~90%
         p = 15
         while True:
