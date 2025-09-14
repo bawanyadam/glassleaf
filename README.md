@@ -20,7 +20,7 @@
 ---
 
 # Screenshot
-The main interface showing drag-and-drop upload and progress:
+The main interface showing drag-and-drop upload:
 
 ![Glassleaf interface](images/interface.png)
 
